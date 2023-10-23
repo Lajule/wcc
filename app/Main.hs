@@ -1,55 +1,24 @@
-{-# LANGUAGE DuplicateRecordFields #-}
-{-# LANGUAGE DeriveGeneric #-}
-
 module Main (main) where
 
--- stack --allow-different-user script --resolver lts-21.14 --package base --package bytestring --package aeson
-
-
-import           Data.Aeson (encode, ToJSON)
+import           Data.Aeson (encode)
 import qualified Data.ByteString.Lazy.Char8 as BL
-import           Data.List (group, maximumBy)
-import           Data.Ord (comparing)
-import           GHC.Generics
+import           Options.Applicative
 import           System.Environment (getArgs)
-import Lib
+import           WCC (File, parse)
 
 -------------------------------------------------------------------------------
--- MostRepeatedChar
+-- Opts
 -------------------------------------------------------------------------------
 
-data MostRepeatedChar = MostRepeatedChar
-    { char  :: Char
-    , count :: Int
-    } deriving (Show, Generic)
+data Opts = Opts
+  { pretty :: Bool }
 
-instance ToJSON MostRepeatedChar
-
--------------------------------------------------------------------------------
--- MostRepeatedWord
--------------------------------------------------------------------------------
-
-data MostRepeatedWord = MostRepeatedWord
-    { word  :: String
-    , count :: Int
-    } deriving (Show, Generic)
-
-instance ToJSON MostRepeatedWord
-
--------------------------------------------------------------------------------
--- File
--------------------------------------------------------------------------------
-
-data File = File
-    { filepath           :: String
-    , char_count         :: Int
-    , word_count         :: Int
-    , line_count         :: Int
-    , most_repeated_char :: MostRepeatedChar
-    , most_repeated_word :: MostRepeatedWord
-    }  deriving (Show, Generic)
-
-instance ToJSON File
+opts :: Parser Opts
+opts = Opts
+      <$> switch
+          ( long "pretty"
+         <> short 'p'
+         <> help "Pretty print JSON" )
 
 main :: IO ()
 main = do
@@ -62,28 +31,3 @@ readAll x = mapM read' x
 
 read' :: String -> IO File
 read' fp = readFile fp >>= \c -> return (parse fp c)
-
-parse :: String -> String -> File
-parse fp c = File
-    { filepath           = fp
-    , char_count         = length c
-    , word_count         = length w
-    , line_count         = length (lines c)
-    , most_repeated_char = mostRepeatedChar c
-    , most_repeated_word = mostRepeatedWord w
-    }
-  where w = words c
-
-mostRepeatedChar :: String -> MostRepeatedChar
-mostRepeatedChar c = MostRepeatedChar
-    { char  = head g
-    , count = length g
-    }
-  where g = maximumBy (comparing length) (group c)
-
-mostRepeatedWord :: [String] -> MostRepeatedWord
-mostRepeatedWord w = MostRepeatedWord
-    { word  = head g
-    , count = length g
-    }
-  where g = maximumBy (comparing length) (group w)
