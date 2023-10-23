@@ -9,13 +9,14 @@ import Data.Aeson (ToJSON)
 import Data.List (group, maximumBy)
 import Data.Ord (comparing)
 import GHC.Generics
+import Prelude as P
 
 -------------------------------------------------------------------------------
 -- MostRepeatedChar
 -------------------------------------------------------------------------------
 
 data MostRepeatedChar = MostRepeatedChar
-    { char  :: Char
+    { byte  :: Char
     , count :: Int
     } deriving (Show, Generic)
 
@@ -38,10 +39,10 @@ instance ToJSON MostRepeatedWord
 
 data File = File
     { filepath           :: String
-    , char_count         :: Int
-    , word_count         :: Int
-    , line_count         :: Int
-    , most_repeated_char :: MostRepeatedChar
+    , bytes              :: Int
+    , words              :: Int
+    , newlines           :: Int
+    , most_repeated_byte :: MostRepeatedChar
     , most_repeated_word :: MostRepeatedWord
     }  deriving (Show, Generic)
 
@@ -50,17 +51,17 @@ instance ToJSON File
 parse :: String -> String -> File
 parse fp c = File
     { filepath           = fp
-    , char_count         = length c
-    , word_count         = length w
-    , line_count         = length (lines c)
-    , most_repeated_char = mostRepeatedChar c
+    , bytes              = length c
+    , words              = length w
+    , newlines           = length (lines c)
+    , most_repeated_byte = mostRepeatedChar c
     , most_repeated_word = mostRepeatedWord w
     }
-  where w = words c
+  where w = P.words c
 
 mostRepeatedChar :: String -> MostRepeatedChar
 mostRepeatedChar c = MostRepeatedChar
-    { char  = head g
+    { byte  = head g
     , count = length g
     }
   where g = maximumBy (comparing length) (group c)

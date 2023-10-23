@@ -24,6 +24,7 @@ dependencies:
 - optparse-applicative
 - bytestring
 - aeson
+- aeson-pretty
 
 ghc-options:
 - -Wall
