@@ -2,7 +2,7 @@
 {-# LANGUAGE DuplicateRecordFields #-}
 
 module WCC
-  ( File,
+  ( File(..),
     parse,
   )
 where
@@ -21,7 +21,7 @@ data MostRepeatedChar = MostRepeatedChar
   { byte :: Char,
     count :: Int
   }
-  deriving (Show, Generic)
+  deriving (Show, Generic, Eq)
 
 instance ToJSON MostRepeatedChar
 
@@ -33,7 +33,7 @@ data MostRepeatedWord = MostRepeatedWord
   { word :: String,
     count :: Int
   }
-  deriving (Show, Generic)
+  deriving (Show, Generic, Eq)
 
 instance ToJSON MostRepeatedWord
 
@@ -49,7 +49,7 @@ data File = File
     most_repeated_byte :: MostRepeatedChar,
     most_repeated_word :: MostRepeatedWord
   }
-  deriving (Show, Generic)
+  deriving (Show, Generic, Eq)
 
 instance ToJSON File
 
