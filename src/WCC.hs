@@ -3,6 +3,7 @@
 
 module WCC
   ( File(..),
+    MostRepeatedWord(..),
     parse,
   )
 where
@@ -14,24 +15,12 @@ import GHC.Generics
 import Prelude as P
 
 -------------------------------------------------------------------------------
--- MostRepeatedChar
--------------------------------------------------------------------------------
-
-data MostRepeatedChar = MostRepeatedChar
-  { byte :: Char,
-    count :: Int
-  }
-  deriving (Show, Generic, Eq)
-
-instance ToJSON MostRepeatedChar
-
--------------------------------------------------------------------------------
 -- MostRepeatedWord
 -------------------------------------------------------------------------------
 
 data MostRepeatedWord = MostRepeatedWord
   { word :: String,
-    count :: Int
+    word_count :: Int
   }
   deriving (Show, Generic, Eq)
 
@@ -46,7 +35,6 @@ data File = File
     bytes :: Int,
     words :: Int,
     newlines :: Int,
-    most_repeated_byte :: MostRepeatedChar,
     most_repeated_word :: MostRepeatedWord
   }
   deriving (Show, Generic, Eq)
@@ -60,26 +48,16 @@ parse fp c =
       bytes = length c,
       words = length w,
       newlines = length (lines c),
-      most_repeated_byte = mostRepeatedChar c,
       most_repeated_word = mostRepeatedWord w
     }
   where
     w = P.words c
 
-mostRepeatedChar :: String -> MostRepeatedChar
-mostRepeatedChar c =
-  MostRepeatedChar
-    { byte = head g,
-      count = length g
-    }
-  where
-    g = maximumBy (comparing length) (group c)
-
 mostRepeatedWord :: [String] -> MostRepeatedWord
 mostRepeatedWord w =
   MostRepeatedWord
     { word = head g,
-      count = length g
+      word_count = length g
     }
   where
     g = maximumBy (comparing length) (group w)

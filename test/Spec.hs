@@ -1,11 +1,14 @@
 import Test.Hspec
-import WCC (File(..), parse)
+import WCC as W
 
 main :: IO ()
 main = hspec $ do
   describe "parse" $ do
     it "can parse" $ do
-      let f = parse "foo" "bar"
-      filepath f `shouldBe` "foo"
-      bytes f `shouldBe` 3
-      newlines f `shouldBe` 1
+      let f = W.parse "foo" "bar bar"
+      W.filepath f `shouldBe` "foo"
+      W.bytes f `shouldBe` 7
+      W.words f `shouldBe` 2
+      W.newlines f `shouldBe` 1
+      W.word (W.most_repeated_word f) `shouldBe` "bar"
+      W.word_count (W.most_repeated_word f) `shouldBe` 2
